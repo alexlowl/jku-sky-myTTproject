@@ -46,7 +46,9 @@ module tt_um_alexlowl_myTTproject_tb;
 
 	
 		/* verilator lint_off STMTDLY */
-		//#1 ui_in[0] = 1'b1;					// pause pressed -> stop
+		
+		/*
+		// Fast simulation
 		#300 rst_n = 1'b1; 					// deassert reset
 		#300 ui_in[0] = 1'b1;				// pause_btn pressed -> go
 		#300 ui_in[0] = 1'b0;				// pause_btn released
@@ -54,10 +56,24 @@ module tt_um_alexlowl_myTTproject_tb;
 		#300 ui_in[1] = 1'b0;
 		#300 ui_in[2] = 1'b1;				// slower
 		#300 ui_in[2] = 1'b0;
-		//#1200000000 ui_in[0] = 1'b1;		// after 1.2sec -> pause pressed -> stop
-		#90000000 ui_in[0] = 1'b1;		// after 0.09sec -> pause_btn pressed again -> pause
+		#90000000 ui_in[0] = 1'b1;			// after 0.09sec -> pause_btn pressed again -> pause
 		#300 ui_in[0] = 1'b0;				// pause_btn released				
 		#300 $finish; // finish
+		*/
+		
+		// Detailed simulation
+		#300 rst_n = 1'b1; 					// deassert reset
+		#50000000 ui_in[0] = 1'b1;			// after 0.05sec pause_btn pressed -> go
+		#300 ui_in[0] = 1'b0;				// pause_btn released
+		#2000000000 ui_in[1] = 1'b1;		// after 2sec -> faster
+		#300 ui_in[1] = 1'b0;
+		#2000000000 ui_in[2] = 1'b1;		// after 2sec -> slower
+		#300 ui_in[2] = 1'b0;
+		#2000000000 ui_in[0] = 1'b1;		// after 2sec pause_btn pressed -> pause
+		#300 ui_in[0] = 1'b0;				// pause_btn released				
+		#300 $finish; // finish
+		
+		
 	/* verilator lint_on STMTDLY */	
 	end
 endmodule // tt_um_alexlowl_myTTproject_tb
