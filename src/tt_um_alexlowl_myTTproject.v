@@ -22,6 +22,55 @@ module tt_um_alexlowl_myTTproject (
     wire pause_btn = ui_in[0];
     wire faster  = ui_in[1];
     wire slower  = ui_in[2];
+    
+    // ===========================================================
+    // Debouncing of input buttons
+    // ===========================================================
+    localparam integer DEBOUNCE_BITS = 18;  // ~2^18 cycles = debounce time window
+
+    reg [DEBOUNCE_BITS-1:0] db_counter_pause;
+    reg [DEBOUNCE_BITS-1:0] db_counter_faster;
+    reg [DEBOUNCE_BITS-1:0] db_counter_slower;
+
+    reg pause_stable;
+    reg faster_stable;
+    reg slower_stable;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            db_counter_pause  <= 0;
+            db_counter_faster <= 0;
+            db_counter_slower <= 0;
+            pause_stable      <= 0;
+            faster_stable     <= 0;
+            slower_stable     <= 0;
+        end 
+        else begin
+            if (pause_btn == pause_stable)							// debounce pause button
+                db_counter_pause <= 0;  							// reset counter
+            else begin
+                db_counter_pause <= db_counter_pause + 1;
+                if (&db_counter_pause)  							// overflow -> input was stable long enough
+                    pause_stable <= pause_btn;
+            end
+
+            if (faster == faster_stable)							// debounce faster button
+                db_counter_faster <= 0;
+            else begin
+                db_counter_faster <= db_counter_faster + 1;
+                if (&db_counter_faster)
+                    faster_stable <= faster;
+            end
+
+            if (slower == slower_stable)							// debounce slower button
+                db_counter_slower <= 0;
+            else begin
+                db_counter_slower <= db_counter_slower + 1;
+                if (&db_counter_slower)
+                    slower_stable <= slower;
+            end
+        end
+    end
 
     // ===========================================================
     // Output
@@ -76,9 +125,9 @@ module tt_um_alexlowl_myTTproject (
             slower_prev <= 0;
         end 
         else begin
-            if (faster && !faster_prev && speed_level < 7)	// prevent overflow
+            if (faster_stable && !faster_prev && speed_level < 7)	// prevent overflow
                 speed_level <= speed_level + 1; 			// faster
-            if (slower && !slower_prev && speed_level > 0)	// prevent underflow
+            if (slower_stable && !slower_prev && speed_level > 0)	// prevent underflow
                 speed_level <= speed_level - 1; 			// slower
 
             faster_prev <= faster;
@@ -96,9 +145,9 @@ module tt_um_alexlowl_myTTproject (
             started    <= 0;
         end 
         else begin
-            pause_prev <= pause_btn;
+            pause_prev <= pause_stable;
 
-            if (pause_btn && !pause_prev) begin
+            if (pause_stable && !pause_prev) begin
                 paused <= ~paused;
 
                 if (paused == 1'b1 && started == 1'b0) begin	// first unpause after power up -> set started-flag
