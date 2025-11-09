@@ -9,8 +9,8 @@
 module tt_um_alexlowl_myTTproject_tb;
 
 	// inputs for tt_um_alexlowl_myTTproject
-	reg [7:0] ui_in = 8'h00;				// set inputs tp 0
-	reg [7:0] uio_in = 8'h00;				// set bidirectional inputs to 0
+	reg [7:0] ui_in = 8'h0;				// set inputs tp 0
+	reg [7:0] uio_in = 8'h0;				// set bidirectional inputs to 0
 	reg ena = 1'b1;						// enable
 	reg clk = 1'b0;						// clock initially low
 	reg rst_n = 1'b0;  					// Active low reset
@@ -31,23 +31,33 @@ module tt_um_alexlowl_myTTproject_tb;
 		.clk(clk),
 		.rst_n(rst_n)
 	);
-	
+				
 	//Generate clock
 	/* verilator lint_off STMTDLY */
-	always #5 clk = ~clk; // wait 5 time units (e.g. 5ns)
+	always #10 clk = ~clk; // wait 10 time units (e.g. 10ns) -> 50MHz
 	/* verilator lint_on STMTDLY */
 	
 	initial begin
 		$dumpfile("tt_um_alexlowl_myTTproject_tb.vcd");
-		$dumpvars;
+		$dumpvars(0, tt_um_alexlowl_myTTproject_tb.rst_n);
+		$dumpvars(0, tt_um_alexlowl_myTTproject_tb.ui_in);
+		$dumpvars(0, tt_um_alexlowl_myTTproject_tb.uo_out);
+		//$dumpvars(1, tt_um_alexlowl_myTTproject_tb.tt_um_alexlowl_myTTproject_dut);
+
 	
 		/* verilator lint_off STMTDLY */
-		#50 rst_n = 1'b1; // deassert reset
-		#50 ui_in[0] = 1'b1;
-		#50 ui_in[0] = 1'b0;
-		#50 ui_in[0] = 1'b1;
-		#50 ui_in[0] = 1'b0;
-		#3000 $finish; // finish
-		/* verilator lint_on STMTDLY */
+		//#1 ui_in[0] = 1'b1;					// pause pressed -> stop
+		#300 rst_n = 1'b1; 					// deassert reset
+		#300 ui_in[0] = 1'b1;				// pause_btn pressed -> go
+		#300 ui_in[0] = 1'b0;				// pause_btn released
+		#300 ui_in[1] = 1'b1;				// faster
+		#300 ui_in[1] = 1'b0;
+		#300 ui_in[2] = 1'b1;				// slower
+		#300 ui_in[2] = 1'b0;
+		//#1200000000 ui_in[0] = 1'b1;		// after 1.2sec -> pause pressed -> stop
+		#90000000 ui_in[0] = 1'b1;		// after 0.09sec -> pause_btn pressed again -> pause
+		#300 ui_in[0] = 1'b0;				// pause_btn released				
+		#300 $finish; // finish
+	/* verilator lint_on STMTDLY */	
 	end
 endmodule // tt_um_alexlowl_myTTproject_tb
