@@ -55,7 +55,7 @@ module tt_um_alexlowl_myTTproject (
 		started = 0;
 	end
 	`endif
-
+/*
     // Debouncing of input buttons
     localparam integer DEBOUNCE_BITS = 18;  	// debounce time window 2^18 clock cycles
 
@@ -101,7 +101,7 @@ module tt_um_alexlowl_myTTproject (
                     slower_stable <= slower;
             end
         end
-    end
+    end*/
 
     // Edge detection for slower/faster buttons (positive edge)
     always @(posedge clk or negedge rst_n) begin
@@ -111,9 +111,9 @@ module tt_um_alexlowl_myTTproject (
             slower_prev <= 0;
         end 
         else begin
-            if (faster_stable && !faster_prev && speed_level < 7)	// prevent overflow
+            if (faster && !faster_prev && speed_level < 7)	// prevent overflow
                 speed_level <= speed_level + 1; 					// faster
-            if (slower_stable && !slower_prev && speed_level > 0)	// prevent underflow
+            if (slower && !slower_prev && speed_level > 0)	// prevent underflow
                 speed_level <= speed_level - 1; 					// slower
 
             faster_prev <= faster;
@@ -129,9 +129,9 @@ module tt_um_alexlowl_myTTproject (
             started    <= 0;
         end 
         else begin
-            pause_prev <= pause_stable;
+            pause_prev <= pause_btn;
 
-            if (pause_stable && !pause_prev) begin
+            if (pause_btn && !pause_prev) begin
                 paused <= ~paused;
 
                 if (paused == 1'b1 && started == 1'b0) begin		// first unpause after power up -> set started-flag
@@ -167,26 +167,29 @@ module tt_um_alexlowl_myTTproject (
             pos <= 0;
             dir <= 0;
         end 
-        else if (!paused && !started) begin					// first unpause after power up
-            pos <= 0;
-            dir <= 0;
-        end
         else if (slow_tick && !paused) begin				// position update @ slow_tick & not paused
-            if (dir == 0) begin								// dir = 0 -> direction 1 (count up)
-                if (pos == 7) begin							// upper limit
-                    dir <= 1;								// change direction -> dir = 1 -> direction 2 (count down)
-                    pos <= pos - 1;							// then count down
-                end else begin
-                    pos <= pos + 1;							// count up (for dir = 0)
-                end
-            end 
-            else begin										// dir = 1 -> direction 2 (count down)
-                if (pos == 0) begin							// lower limit
-                    dir <= 0;								// change direction -> dir = 0 -> direction 1 (count up)
-                    pos <= pos + 1;							// then count up
-                end 
-                else begin
-                    pos <= pos - 1;							// count down (for dir = 1)
+		    if (!started) begin								// first unpause after power up
+		        pos <= 0;
+		        dir <= 0;
+		    end
+		    else begin
+            	if (dir == 0) begin								// dir = 0 -> direction 1 (count up)
+                	if (pos == 7) begin							// upper limit
+                  	  	dir <= 1;								// change direction -> dir = 1 -> direction 2 (count down)
+                   		pos <= pos - 1;							// then count down
+                	end 
+                	else begin
+                    	pos <= pos + 1;							// count up (for dir = 0)
+                	end
+            	end 
+            	else begin										// dir = 1 -> direction 2 (count down)
+                	if (pos == 0) begin							// lower limit
+                   		dir <= 0;								// change direction -> dir = 0 -> direction 1 (count up)
+                    	pos <= pos + 1;							// then count up
+                	end 
+                	else begin
+                    	pos <= pos - 1;							// count down (for dir = 1)
+                	end
                 end
             end
         end
@@ -211,8 +214,8 @@ module tt_um_alexlowl_myTTproject (
 
     // PWM output to LEDs
     always @(*) begin
-        for (i = 0; i < 8; i = i + 1)									// LED position
-            led_out[i] = (pwm_counter < brightness[i]) ? 1'b1 : 1'b0;	// LED on for the HIGH period of the PWM duty cycle
+        for (i = 0; i < 8; i = i + 1)														// LED position
+            led_out[i] = (pwm_counter < brightness[i]) ? 1'b1 : 1'b0;					// LED on for the HIGH period of the PWM duty cycle
     end
 
     // List all unused inputs to prevent warnings

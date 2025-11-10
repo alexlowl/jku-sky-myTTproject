@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
-[*] Thu Nov  6 12:50:19 2025
+[*] Mon Nov 10 17:49:09 2025
 [*]
 [dumpfile] "/foss/designs/jku-sky-myTTproject/test/tt_um_alexlowl_myTTproject_tb.vcd"
-[dumpfile_mtime] "Thu Nov  6 12:27:35 2025"
-[dumpfile_size] 6729
+[dumpfile_mtime] "Mon Nov 10 17:43:44 2025"
+[dumpfile_size] 898837
 [savefile] "/foss/designs/jku-sky-myTTproject/test/tt_um_alexlowl_myTTproject_tb.gtkw"
 [timestart] 0
 [size] 1811 900
 [pos] -1 -1
-*-5.000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+*-24.000000 505000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 [markername] AA
 [markername] BB
 [markername] CC
@@ -40,11 +40,20 @@
 [signals_width] 118
 [sst_expanded] 1
 [sst_vpaned_height] 254
-@28
-tt_um_alexlowl_myTTproject_tb.clk
 @22
 tt_um_alexlowl_myTTproject_tb.ui_in[7:0]
-@23
+@800023
 tt_um_alexlowl_myTTproject_tb.uo_out[7:0]
+@29
+(0)tt_um_alexlowl_myTTproject_tb.uo_out[7:0]
+(1)tt_um_alexlowl_myTTproject_tb.uo_out[7:0]
+(2)tt_um_alexlowl_myTTproject_tb.uo_out[7:0]
+(3)tt_um_alexlowl_myTTproject_tb.uo_out[7:0]
+(4)tt_um_alexlowl_myTTproject_tb.uo_out[7:0]
+(5)tt_um_alexlowl_myTTproject_tb.uo_out[7:0]
+(6)tt_um_alexlowl_myTTproject_tb.uo_out[7:0]
+(7)tt_um_alexlowl_myTTproject_tb.uo_out[7:0]
+@1001201
+-group_end
 [pattern_trace] 1
 [pattern_trace] 0
