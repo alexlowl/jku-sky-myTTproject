@@ -6,7 +6,7 @@
 `default_nettype none
 
 module tt_um_alexlowl_myTTproject (
-    input  wire [7:0] ui_in,					// ui_in[0] = pause/run, ui_in[1] = faster, ui_in[2] = slower
+    input  wire [7:0] ui_in,					// ui_in[0] = pause/run, ui_in[1] = slower, ui_in[2] = faster
     output wire [7:0] uo_out,					// LED-Bargraph
     input  wire [7:0] uio_in,   				// unused
     output wire [7:0] uio_out,  				// unused
@@ -18,8 +18,8 @@ module tt_um_alexlowl_myTTproject (
 
     // Input
     wire pause_btn = ui_in[0];
-    wire faster  = ui_in[1];
-    wire slower  = ui_in[2];
+    wire slower  = ui_in[1];
+    wire faster  = ui_in[2];
     
     // Output
     reg [7:0] led_out;
@@ -55,7 +55,7 @@ module tt_um_alexlowl_myTTproject (
 		started = 0;
 	end
 	`endif
-/*
+
     // Debouncing of input buttons
     localparam integer DEBOUNCE_BITS = 18;  	// debounce time window 2^18 clock cycles
 
@@ -101,7 +101,7 @@ module tt_um_alexlowl_myTTproject (
                     slower_stable <= slower;
             end
         end
-    end*/
+    end
 
     // Edge detection for slower/faster buttons (positive edge)
     always @(posedge clk or negedge rst_n) begin
@@ -111,13 +111,13 @@ module tt_um_alexlowl_myTTproject (
             slower_prev <= 0;
         end 
         else begin
-            if (faster && !faster_prev && speed_level < 7)	// prevent overflow
+            if (faster_stable && !faster_prev && speed_level < 7)	// prevent overflow
                 speed_level <= speed_level + 1; 					// faster
-            if (slower && !slower_prev && speed_level > 0)	// prevent underflow
+            if (slower_stable && !slower_prev && speed_level > 0)	// prevent underflow
                 speed_level <= speed_level - 1; 					// slower
 
-            faster_prev <= faster;
-            slower_prev <= slower;
+            faster_prev <= faster_stable;
+            slower_prev <= slower_stable;
         end
     end
 
@@ -129,9 +129,9 @@ module tt_um_alexlowl_myTTproject (
             started    <= 0;
         end 
         else begin
-            pause_prev <= pause_btn;
+            pause_prev <= pause_stable;
 
-            if (pause_btn && !pause_prev) begin
+            if (pause_stable && !pause_prev) begin
                 paused <= ~paused;
 
                 if (paused == 1'b1 && started == 1'b0) begin		// first unpause after power up -> set started-flag
