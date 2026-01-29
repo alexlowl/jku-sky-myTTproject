@@ -4,7 +4,7 @@
 
 A Knight Rider-style LED chaser with PWM brightness control. Speed and pause are adjustable using three debounced buttons. A bargraph is used as LED bar.
 
-Remark: full documentation -> TODO
+Remark: full documentation for the lecture "KV Entwurf integrierter Schaltungen" only on Moodle because it includes personal data
 
 ## How it works
 
